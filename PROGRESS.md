@@ -10,7 +10,8 @@
    - Windows 한글 경로에서 cv2.imread/imwrite가 실패하는 문제 수정.
    - 보행자 발 픽셀을 SegFormer가 person으로 칠해 도로 판정이 틀리는 문제 수정 (발 주변 바닥 창으로 판정).
 3. Validation K 이미지만 사용(5,501장: train 3,894 / val 798 / test 809)해 YOLOv8s 베이스라인 학습.
-   - 7 epoch 시점 val mAP50 0.676, mAP50-95 0.460 (`outputs/aihub/results/yolov8s_baseline_partial_e7.csv`).
+   - 50 epoch 완료. test mAP50 0.734, mAP50-95 0.524, 보행자 mAP50 0.789 (`outputs/aihub/results/yolov8s_e50_s0.json`).
+   - 가중치와 예시 그림은 Drive의 `rapd_weights_20261010.zip`.
 
 ### 발견
 
@@ -31,6 +32,8 @@
 2. 위험 보행자 정의 확정: 주행 경로(이미지 하단 중앙)까지의 거리 또는 도로 가장자리 기준.
 3. LiDAR Road/Sidewalk → 카메라 투영 가능성 확인 (Other.zip의 정합 파일).
 4. 제안 모듈(Road-Guided Attention) 구현 및 베이스라인과 비교.
+5. Other.zip(69MB)에 GPS 메타데이터가 있는지 확인 → 위험 보행자 출현 지점 지도(선택 확장).
+6. 교수님 보고: `docs/advisor_brief.md`.
 
 ## 준비된 환경(Python/PyTorch 있는 PC나 서버)에서 시작하는 법
 

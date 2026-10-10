@@ -1,0 +1,16 @@
+{
+  "name": "yolov8s_e50_s0",
+  "model": "yolov8s.pt",
+  "epochs": 50,
+  "imgsz": 640,
+  "seed": 0,
+  "mAP50": 0.7339355553628601,
+  "mAP50_95": 0.5241760445882941,
+  "per_class_mAP50": {
+    "pedestrian": 0.78932842842211,
+    "car": 0.8724342468939874,
+    "truck_bus": 0.778308157460974,
+    "two_wheeler": 0.5854831302689673,
+    "personal_mobility": 0.6441238137682621
+  }
+}
