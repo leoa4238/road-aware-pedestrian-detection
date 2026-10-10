@@ -24,13 +24,19 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--name", default=None)
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--resume", action="store_true", help="weights/last.pt가 있으면 이어서 학습")
     args = parser.parse_args()
 
     name = args.name or f"{Path(args.model).stem}_e{args.epochs}_s{args.seed}"
     project = REPO / "outputs" / "aihub" / "runs"
-    model = YOLO(args.model)
-    model.train(data=str(args.data), epochs=args.epochs, imgsz=args.imgsz, batch=args.batch, seed=args.seed,
-                deterministic=True, workers=args.workers, project=str(project), name=name, exist_ok=True)
+    last = project / name / "weights" / "last.pt"
+    if args.resume and last.exists():
+        # 중단된 학습을 같은 설정(epochs, optimizer 상태)으로 이어서 진행한다
+        YOLO(last).train(resume=True)
+    else:
+        model = YOLO(args.model)
+        model.train(data=str(args.data), epochs=args.epochs, imgsz=args.imgsz, batch=args.batch, seed=args.seed,
+                    deterministic=True, workers=args.workers, project=str(project), name=name, exist_ok=True)
 
     best = YOLO(project / name / "weights" / "best.pt")
     metrics = best.val(data=str(args.data), split="test", imgsz=args.imgsz, batch=args.batch,
