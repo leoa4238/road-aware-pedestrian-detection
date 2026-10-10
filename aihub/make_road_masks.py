@@ -75,26 +75,33 @@ def mask_path_of(image_path: Path, data: Path) -> Path:
 def pedestrian_road_relation(data: Path) -> pd.DataFrame:
     objects = pd.read_csv(data / "objects.csv")
     peds = objects[objects["cls"] == "pedestrian"].copy()
-    zone, dist, road_ratio = [], [], {}
+    zone = pd.Series("unknown", index=peds.index)
+    dist = pd.Series(np.nan, index=peds.index)
+    road_ratio = {}
     for (split, image), group in tqdm(peds.groupby(["split", "image"]), desc="road relation"):
         mask = imread(data / "road_masks" / split / f"{image}.png", cv2.IMREAD_GRAYSCALE)
         if mask is None:
-            zone += ["unknown"] * len(group)
-            dist += [np.nan] * len(group)
             continue
         road = (mask == 1).astype(np.uint8)
         road_ratio[image] = float(road.mean())
         # 도로가 아닌 픽셀에서 가장 가까운 도로 픽셀까지 거리(마스크 px)
         dt = cv2.distanceTransform(1 - road, cv2.DIST_L2, 3) if road.any() else None
         sx, sy = mask.shape[1] / group["img_w"].iloc[0], mask.shape[0] / group["img_h"].iloc[0]
-        for _, o in group.iterrows():
-            fx = int(np.clip(o["foot_x"] * sx, 0, mask.shape[1] - 1))
-            fy = int(np.clip(o["foot_y"] * sy, 0, mask.shape[0] - 1))
-            value = mask[fy, fx]
-            zone.append({1: "road", 2: "sidewalk"}.get(int(value), "other"))
-            # 거리는 보행자 키(bbox 높이) 대비 비율로 정규화해 원근 차이를 줄인다
-            d = float(dt[fy, fx]) / max(o["h"] * sy, 1.0) if dt is not None else np.nan
-            dist.append(d)
+        mh, mw = mask.shape
+        for idx, o in group.iterrows():
+            fx, fy, h, w = o["foot_x"] * sx, o["foot_y"] * sy, max(o["h"] * sy, 1.0), max(o["w"] * sx, 1.0)
+            # SegFormer는 발 픽셀 자체를 person으로 칠하므로 발 주변 바닥 창에서 도로/보도를 판단한다
+            y0, y1 = int(np.clip(fy - 0.05 * h, 0, mh - 1)), int(np.clip(fy + 0.10 * h, 0, mh - 1)) + 1
+            x0, x1 = int(np.clip(fx - 0.40 * w, 0, mw - 1)), int(np.clip(fx + 0.40 * w, 0, mw - 1)) + 1
+            window = mask[y0:y1, x0:x1]
+            n_road, n_side = int((window == 1).sum()), int((window == 2).sum())
+            if n_road + n_side >= 0.2 * window.size:
+                zone[idx] = "road" if n_road >= n_side else "sidewalk"
+            else:
+                zone[idx] = "other"
+            # 거리는 보행자 키 대비 비율로 정규화해 원근 차이를 줄인다
+            if dt is not None:
+                dist[idx] = float(dt[y0:y1, x0:x1].min()) / h
     peds["foot_zone"] = zone
     peds["road_dist_norm"] = dist
     peds["image_road_ratio"] = peds["image"].map(road_ratio)
