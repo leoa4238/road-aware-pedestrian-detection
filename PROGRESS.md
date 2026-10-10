@@ -32,6 +32,17 @@
 3. LiDAR Road/Sidewalk → 카메라 투영 가능성 확인 (Other.zip의 정합 파일).
 4. 제안 모듈(Road-Guided Attention) 구현 및 베이스라인과 비교.
 
+## 준비된 환경(Python/PyTorch 있는 PC나 서버)에서 시작하는 법
+
+```bash
+git clone https://github.com/leoa4238/road-aware-pedestrian-detection.git && cd road-aware-pedestrian-detection
+pip install -r aihub/requirements.txt        # PyTorch는 CUDA 버전에 맞게 별도 설치
+# Drive의 rapd_backup_YYYYMMDD.zip을 원하는 곳에 풀기 -> <DATA>/aihub_f
+python aihub/train_baseline.py --data <DATA>/aihub_f/dataset.yaml --model yolov8s.pt --epochs 50
+```
+
+dataset.yaml 경로는 학습 시작 때 자동으로 실제 위치로 고쳐진다.
+
 ## PC방에서 다시 시작하는 법
 
 1. 환경 설치 (15~20분): `aihub/setup_pcbang.ps1` 실행.

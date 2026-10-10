@@ -27,6 +27,11 @@ def main() -> None:
     parser.add_argument("--resume", action="store_true", help="weights/last.pt가 있으면 이어서 학습")
     args = parser.parse_args()
 
+    # 백업 zip을 다른 PC/경로에 풀어도 동작하도록 dataset.yaml의 path를 실제 위치로 맞춘다
+    lines = args.data.read_text(encoding="utf-8").splitlines()
+    lines = [f"path: {args.data.resolve().parent.as_posix()}" if l.startswith("path:") else l for l in lines]
+    args.data.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
     name = args.name or f"{Path(args.model).stem}_e{args.epochs}_s{args.seed}"
     project = REPO / "outputs" / "aihub" / "runs"
     last = project / name / "weights" / "last.pt"
