@@ -118,7 +118,11 @@ def write_images(records: list[dict], image_zips: list[Path], out: Path, width: 
                     h = round(img.shape[0] * width / img.shape[1])
                     img = cv2.resize(img, (width, h), interpolation=cv2.INTER_AREA)
                     target.parent.mkdir(parents=True, exist_ok=True)
-                    cv2.imwrite(str(target), img, [cv2.IMWRITE_JPEG_QUALITY, quality])
+                    # cv2.imwrite는 Windows에서 한글 경로에 쓰지 못하므로 인코딩 후 직접 저장한다
+                    ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, quality])
+                    if not ok:
+                        continue
+                    buf.tofile(str(target))
                 written.add(rec["png"])
     return written
 

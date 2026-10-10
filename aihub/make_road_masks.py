@@ -24,6 +24,21 @@ IMAGENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 IMAGENET_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
 
+def imread(path: Path, flags: int = cv2.IMREAD_COLOR) -> np.ndarray | None:
+    # cv2.imread는 Windows에서 한글 경로를 열지 못한다
+    try:
+        return cv2.imdecode(np.fromfile(str(path), dtype=np.uint8), flags)
+    except FileNotFoundError:
+        return None
+
+
+def imwrite(path: Path, img: np.ndarray) -> None:
+    ok, buf = cv2.imencode(Path(path).suffix, img)
+    if not ok:
+        raise ValueError(f"encode failed: {path}")
+    buf.tofile(str(path))
+
+
 def to_tensor(img_bgr: np.ndarray, size: tuple[int, int]) -> torch.Tensor:
     img = cv2.resize(img_bgr, size, interpolation=cv2.INTER_AREA)[:, :, ::-1].astype(np.float32) / 255.0
     return torch.from_numpy(((img - IMAGENET_MEAN) / IMAGENET_STD).transpose(2, 0, 1))
@@ -38,7 +53,7 @@ def segment_all(paths: list[Path], data: Path, mask_width: int, batch: int, infe
     todo = [p for p in paths if not mask_path_of(p, data).exists()]
     for i in tqdm(range(0, len(todo), batch), desc="segformer"):
         chunk = todo[i:i + batch]
-        imgs = [cv2.imread(str(p)) for p in chunk]
+        imgs = [imread(p) for p in chunk]
         x = torch.stack([to_tensor(im, infer_size) for im in imgs]).to(device)
         logits = model(pixel_values=x.half() if device == "cuda" else x).logits
         for p, im, lg in zip(chunk, imgs, logits):
@@ -50,7 +65,7 @@ def segment_all(paths: list[Path], data: Path, mask_width: int, batch: int, infe
             mask[pred == SIDEWALK] = 2
             out = mask_path_of(p, data)
             out.parent.mkdir(parents=True, exist_ok=True)
-            cv2.imwrite(str(out), mask)
+            imwrite(out, mask)
 
 
 def mask_path_of(image_path: Path, data: Path) -> Path:
@@ -62,7 +77,7 @@ def pedestrian_road_relation(data: Path) -> pd.DataFrame:
     peds = objects[objects["cls"] == "pedestrian"].copy()
     zone, dist, road_ratio = [], [], {}
     for (split, image), group in tqdm(peds.groupby(["split", "image"]), desc="road relation"):
-        mask = cv2.imread(str(data / "road_masks" / split / f"{image}.png"), cv2.IMREAD_GRAYSCALE)
+        mask = imread(data / "road_masks" / split / f"{image}.png", cv2.IMREAD_GRAYSCALE)
         if mask is None:
             zone += ["unknown"] * len(group)
             dist += [np.nan] * len(group)
