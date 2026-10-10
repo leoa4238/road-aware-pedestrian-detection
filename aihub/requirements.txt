@@ -1,0 +1,9 @@
+ultralytics==8.3.150
+transformers==4.52.4
+pycocotools
+pandas
+scikit-learn
+matplotlib
+opencv-python
+pyyaml
+tqdm
