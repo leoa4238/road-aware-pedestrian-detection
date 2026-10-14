@@ -25,6 +25,8 @@ import os
 !pip -q install ultralytics==8.3.150
 if not os.path.exists('/content/rapd'):
     !git clone -q -b {BRANCH} https://github.com/leoa4238/road-aware-pedestrian-detection.git /content/rapd
+else:
+    !git -C /content/rapd pull -q   # 세션이 살아 있는 동안 코드가 갱신된 경우
 if not os.path.exists('/content/data/aihub_f/images.csv'):
     # Drive에서 바로 읽으면 느리므로 로컬 디스크로 복사해서 푼다 (몇 분 걸림)
     !cp "{BACKUP_ZIP}" /content/backup.zip && unzip -q /content/backup.zip -d /content/data && rm /content/backup.zip
@@ -70,6 +72,40 @@ resume = '--resume' if os.path.exists(f'{DRIVE_OUT}/runs/{NAME}/weights/last.pt'
 import json
 print(json.dumps(json.load(open(f'{DRIVE_OUT}/results/{NAME}.json')), indent=2, ensure_ascii=False))
 ```
+
+## 셀 6. 도로 모듈 비교 모델 학습 (RGA 등)
+
+셀 1~3을 실행한 뒤 셀 4 대신 이 셀을 쓴다. `MODE`와 `SEED`만 바꿔 가며 실행한다.
+baseline(`none`)은 셀 4의 `train_baseline.py` 결과를 그대로 쓴다.
+
+```python
+MODE = 'rga'        # concat | attn | rga | rgab
+SEED = 0
+CLOSE = 0           # 0이 기본. 마스크 구멍 메우기 대조 실험일 때만 31
+%cd /content/rapd
+suffix = f'_close{CLOSE}' if CLOSE else ''
+RUN = f'yolov8s_{MODE}{suffix}_e50_s{SEED}'
+resume = '--resume' if os.path.exists(f'{DRIVE_OUT}/runs/{RUN}/weights/last.pt') else ''
+!python aihub/train_road.py --data /content/data/aihub_f/dataset_session_v1.yaml \
+    --mode {MODE} --seed {SEED} --mask-close {CLOSE} --batch 16 --workers 2 {resume}
+import json
+print(json.dumps(json.load(open(f'{DRIVE_OUT}/results/{RUN}.json')), indent=2, ensure_ascii=False))
+```
+
+| MODE | 의미 |
+|---|---|
+| `concat` | 도로 마스크를 4번째 입력 채널로 단순 추가 |
+| `attn` | RGA와 같은 크기의 attention, 도로 정보 없음 (대조군) |
+| `rga` | 제안 모듈: 도로 확률로 조절하는 residual attention |
+| `rgab` | rga + 도로 경계 채널 |
+
+권장 실행 순서 (무료 Colab 하루 2~3개 기준):
+
+1. `rga` s0 → `attn` s0 → `concat` s0 → `rgab` s0
+2. 같은 순서로 s1, s2. baseline도 셀 4에서 `--seed 1`, `--seed 2`로 추가 (NAME도 `_s1`, `_s2`로 변경)
+3. `rga`에 `CLOSE = 31` (마스크의 사람/차량 모양 구멍을 메운 대조 실험) s0
+
+학습이 끝나면 셀 출력의 JSON을 Claude나 Codex에게 붙여 넣는다.
 
 ## 무료 Colab 주의점
 
