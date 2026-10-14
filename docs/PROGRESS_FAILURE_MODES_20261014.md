@@ -117,7 +117,7 @@
 ## 7. 다음 작업
 
 1. **(사용자) 마스크 150개 검수**와 `fp_background_review.csv` 상위 40개 육안 확인. 라벨 누락 비율을 알면 배경 오탐 수치를 어떻게 해석할지 정해진다.
-2. **(사용자 확인 후) `session_v1`로 baseline 재학습.** 기존 split의 수치(mAP50 0.734)와 직접 비교하지 않고, 이후 모든 모델을 이 split에서 같은 조건으로 학습한다. 4GB GPU(GTX 1650 SUPER)에서는 batch를 줄여야 하므로, 가능하면 PC방(RTX 4060 Ti) 또는 서버에서 한다.
+2. **(사용자 확인 후) `session_v1`로 baseline 재학습.** 기존 split의 수치(mAP50 0.734)와 직접 비교하지 않고, 이후 모든 모델을 이 split에서 같은 조건으로 학습한다. 4GB GPU(GTX 1650 SUPER)에서는 batch를 줄여야 하므로, Colab에서 학습한다면 `docs/COLAB_TRAINING.md`를 따른다.
 
    ```powershell
    python aihub\train_baseline.py --data <DATA>\aihub_f\dataset_session_v1.yaml --model yolov8s.pt --epochs 50 --seed 0 --name yolov8s_session_v1_s0
