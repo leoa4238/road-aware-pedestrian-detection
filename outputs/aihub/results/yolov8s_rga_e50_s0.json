@@ -1,0 +1,20 @@
+{
+  "name": "yolov8s_rga_e50_s0",
+  "model": "yolov8s.pt",
+  "mode": "rga",
+  "mask_close": 0,
+  "epochs": 50,
+  "imgsz": 640,
+  "seed": 0,
+  "fraction": 1.0,
+  "mAP50": 0.7233562130874185,
+  "mAP50_95": 0.5174320017072838,
+  "per_class_mAP50": {
+    "pedestrian": 0.7730618305056451,
+    "car": 0.8696713875628868,
+    "truck_bus": 0.7353314359227394,
+    "two_wheeler": 0.5906820349775129,
+    "personal_mobility": 0.6480343764683087
+  },
+  "environment": "Google Colab free (T4), ultralytics 8.3.150, split session_v1, 2.30 h"
+}
