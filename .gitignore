@@ -20,6 +20,8 @@ outputs/aihub/runs/
 
 # Private analysis artifacts include annotation coordinates and prediction caches.
 outputs/aihub/error_analysis/
+outputs/aihub/error_analysis_*/
 outputs/aihub/failure_modes/
+outputs/aihub/failure_modes_*/
 outputs/aihub/splits/
 Ultralytics/
