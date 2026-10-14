@@ -114,6 +114,23 @@
 
 `.gitignore`에 `outputs/aihub/failure_modes/`, `outputs/aihub/splits/`를 추가했다. 라벨 좌표가 들어 있기 때문이다. 커밋은 하지 않았다.
 
+## 6-1. session_v1 baseline 결과 (Colab T4, seed 0)
+
+`outputs/aihub/results/yolov8s_session_v1_s0.json`. 가중치는 사용자 Drive `rapd_runs/runs/yolov8s_session_v1_s0/weights/best.pt`.
+
+| 지표 (test mAP50) | 기존 split | session_v1 |
+|---|---:|---:|
+| 전체 mAP50 | 0.734 | 0.723 |
+| 전체 mAP50-95 | 0.524 | 0.522 |
+| 보행자 | 0.789 | 0.777 |
+| 승용차 | 0.872 | 0.875 |
+| 트럭/버스 | 0.778 | 0.750 |
+| 이륜차 | 0.585 | 0.589 |
+| PM | 0.644 | 0.622 |
+
+test 이미지가 서로 다르므로 차이를 세션 누수 효과로 단정하지 않는다. 누수 제거 후에도 큰 하락은 없었다는 정도로만 해석한다.
+이후 모든 비교 모델의 기준선은 이 수치다. 시드 반복(최소 3개)은 제안 모델과 함께 수행한다.
+
 ## 7. 다음 작업
 
 1. **(사용자) 마스크 150개 검수**와 `fp_background_review.csv` 상위 40개 육안 확인. 라벨 누락 비율을 알면 배경 오탐 수치를 어떻게 해석할지 정해진다.

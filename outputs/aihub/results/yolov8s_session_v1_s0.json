@@ -1,0 +1,17 @@
+{
+  "name": "yolov8s_session_v1_s0",
+  "model": "yolov8s.pt",
+  "epochs": 50,
+  "imgsz": 640,
+  "seed": 0,
+  "mAP50": 0.7226887408995835,
+  "mAP50_95": 0.5217420226353766,
+  "per_class_mAP50": {
+    "pedestrian": 0.7772686802455882,
+    "car": 0.8745830500198291,
+    "truck_bus": 0.7497389321075368,
+    "two_wheeler": 0.5894657593472674,
+    "personal_mobility": 0.6223872827776956
+  },
+  "environment": "Google Colab free (T4), ultralytics 8.3.150, split session_v1"
+}
