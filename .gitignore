@@ -17,3 +17,9 @@ data/
 *.pth
 *.onnx
 outputs/aihub/runs/
+
+# Private analysis artifacts include annotation coordinates and prediction caches.
+outputs/aihub/error_analysis/
+outputs/aihub/failure_modes/
+outputs/aihub/splits/
+Ultralytics/

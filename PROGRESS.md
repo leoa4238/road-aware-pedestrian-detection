@@ -1,5 +1,8 @@
 # 진행 상황
 
+> **최신 (2026-10-14):** 먼저 `docs/PROGRESS_FAILURE_MODES_20261014.md`를 읽는다 (실패 유형 분석, 세션 단위 split `session_v1`, 다음 작업).
+> 그 앞 단계의 오류 분석은 `docs/PROGRESS_ERROR_ANALYSIS_20261014.md`. 아래는 2026-10-10 기록이다.
+
 ## 2026-10-10 (PC방, RTX 4060 Ti 8GB)
 
 ### 한 일
