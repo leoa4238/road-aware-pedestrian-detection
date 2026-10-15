@@ -134,7 +134,7 @@ body{margin:0;font-family:system-ui,'Malgun Gothic',sans-serif;background:#1e1f2
 header{display:flex;gap:16px;align-items:center;padding:8px 16px;background:#2b2d31;flex-wrap:wrap}
 main{display:flex;gap:16px;padding:12px 16px;align-items:flex-start}
 #ctxwrap{position:relative;flex:3}#ctx{width:100%;display:block;border-radius:6px}
-#guide{position:absolute;left:50%;bottom:0;height:45%;border-left:2px dashed rgba(255,255,255,.55);display:none}
+#guide{position:absolute;left:0;top:0;width:100%;height:100%;display:none;pointer-events:none}
 #side{flex:1;min-width:300px}#crop{max-width:100%;max-height:320px;display:block;margin-bottom:8px;border-radius:6px}
 h4{margin:10px 0 4px}.opt{display:inline-block;padding:5px 9px;margin:2px;border-radius:6px;background:#3a3c42;cursor:pointer;font-size:14px}
 .on{background:#2f6fd6;outline:2px solid #ffd400}.tog.on{background:#a0521d}
@@ -143,8 +143,8 @@ small{color:#aaa}button{padding:6px 10px}#warn{color:#ff8a65;min-height:1.2em}
 </style></head><body>
 <header><b id="pos"></b><span id="done"></span>
 <button id="exp">CSV 저장</button><label>CSV 불러오기 <input type="file" id="imp" accept=".csv"></label>
-<small>위치 1-4 · 방향 Q W E R · C 횡단보도 · O 가림 · X 제외 · Space 다음 · ←/→ 이동 · V 마스크(위치 선택 후) · M 마스크 오류 · G 중앙선 · N 메모</small></header>
-<main><div id="ctxwrap"><img id="ctx"><div id="guide"></div></div>
+<small>위치 1-4 · 방향 Q W E R · C 횡단보도 · O 가림 · X 제외 · Space 다음 · ←/→ 이동 · V 마스크(위치 선택 후) · M 마스크 오류 · G 경로 띠 · N 메모</small></header>
+<main><div id="ctxwrap"><img id="ctx"><svg id="guide" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="32,100 68,100 50.6,38 49.4,38" fill="rgba(255,212,0,.13)" stroke="rgba(255,212,0,.85)" stroke-width=".25" stroke-dasharray="1 .8"/></svg></div>
 <div id="side"><img id="crop">
 <h4>① 주행 경로와의 위치</h4>
 <span class="opt" data-f="position" data-v="1">1 경로 안</span><span class="opt" data-f="position" data-v="2">2 경로 가장자리</span>
@@ -156,7 +156,7 @@ small{color:#aaa}button{padding:6px 10px}#warn{color:#ff8a65;min-height:1.2em}
 <span class="opt tog" data-t="crosswalk">C 횡단보도 위</span><span class="opt tog" data-t="occluded">O 가림, 차 사이</span>
 <span class="opt tog" data-t="excluded">X 제외(판단 불가)</span>
 <p id="warn"></p><p id="mflag"></p><input id="note" placeholder="메모 (N으로 입력, Enter로 저장)"><p><small id="meta"></small></p>
-<p><small>노란 박스가 대상입니다. 주행 경로 = 이미지 하단 중앙에서 앞으로 뻗는 차 한 대 폭.
+<p><small>노란 박스가 대상입니다. 주행 경로 = 이미지 하단 중앙에서 앞으로 뻗는 차 한 대 폭. G로 대략적인 경로 띠를 켤 수 있습니다(곡선 도로에서는 눈으로 보정).
 위험 여부는 고르지 않습니다. 보이는 사실만 고르세요. 거리는 자동으로 계산합니다.</small></p></div></main>
 <script>
 const ITEMS=__ITEMS__, KEY='attrlabels___NAME__';
