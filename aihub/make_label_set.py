@@ -128,8 +128,102 @@ i=firstOpen();draw();
 </script></body></html>"""
 
 
+ATTR_PAGE = r"""<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>보행자 조건 라벨링 __NAME__</title>
+<style>
+body{margin:0;font-family:system-ui,'Malgun Gothic',sans-serif;background:#1e1f22;color:#e8e8e8}
+header{display:flex;gap:16px;align-items:center;padding:8px 16px;background:#2b2d31;flex-wrap:wrap}
+main{display:flex;gap:16px;padding:12px 16px;align-items:flex-start}
+#ctxwrap{position:relative;flex:3}#ctx{width:100%;display:block;border-radius:6px}
+#guide{position:absolute;left:50%;bottom:0;height:45%;border-left:2px dashed rgba(255,255,255,.55);display:none}
+#side{flex:1;min-width:300px}#crop{max-width:100%;max-height:320px;display:block;margin-bottom:8px;border-radius:6px}
+h4{margin:10px 0 4px}.opt{display:inline-block;padding:5px 9px;margin:2px;border-radius:6px;background:#3a3c42;cursor:pointer;font-size:14px}
+.on{background:#2f6fd6;outline:2px solid #ffd400}.tog.on{background:#a0521d}
+#note{width:100%;box-sizing:border-box;margin-top:8px;padding:6px;background:#2b2d31;color:#eee;border:1px solid #555;border-radius:4px}
+small{color:#aaa}button{padding:6px 10px}#warn{color:#ff8a65;min-height:1.2em}
+</style></head><body>
+<header><b id="pos"></b><span id="done"></span>
+<button id="exp">CSV 저장</button><label>CSV 불러오기 <input type="file" id="imp" accept=".csv"></label>
+<small>위치 1-4 · 방향 Q W E R · C 횡단보도 · O 가림 · X 제외 · Space 다음 · ←/→ 이동 · V 마스크(위치 선택 후) · M 마스크 오류 · G 중앙선 · N 메모</small></header>
+<main><div id="ctxwrap"><img id="ctx"><div id="guide"></div></div>
+<div id="side"><img id="crop">
+<h4>① 주행 경로와의 위치</h4>
+<span class="opt" data-f="position" data-v="1">1 경로 안</span><span class="opt" data-f="position" data-v="2">2 경로 가장자리</span>
+<span class="opt" data-f="position" data-v="3">3 차도, 경로 밖</span><span class="opt" data-f="position" data-v="4">4 보행 공간</span>
+<h4>② 움직이는 방향</h4>
+<span class="opt" data-f="direction" data-v="q">Q 경로로 들어옴</span><span class="opt" data-f="direction" data-v="w">W 나란히</span>
+<span class="opt" data-f="direction" data-v="e">E 멀어짐</span><span class="opt" data-f="direction" data-v="r">R 서 있음/모름</span>
+<h4>③ ④ 해당하면 켜기</h4>
+<span class="opt tog" data-t="crosswalk">C 횡단보도 위</span><span class="opt tog" data-t="occluded">O 가림, 차 사이</span>
+<span class="opt tog" data-t="excluded">X 제외(판단 불가)</span>
+<p id="warn"></p><p id="mflag"></p><input id="note" placeholder="메모 (N으로 입력, Enter로 저장)"><p><small id="meta"></small></p>
+<p><small>노란 박스가 대상입니다. 주행 경로 = 이미지 하단 중앙에서 앞으로 뻗는 차 한 대 폭.
+위험 여부는 고르지 않습니다. 보이는 사실만 고르세요. 거리는 자동으로 계산합니다.</small></p></div></main>
+<script>
+const ITEMS=__ITEMS__, KEY='attrlabels___NAME__';
+const DIR={q:'q',w:'w',e:'e',r:'r'};
+let S={};try{S=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+let i=0,showMask=false;const $=id=>document.getElementById(id);
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function cur(){const t=ITEMS[i];return S[t.id]||(S[t.id]={});}
+function complete(s){return s.excluded||(s.position&&s.direction);}
+function firstOpen(){const k=ITEMS.findIndex(t=>!complete(S[t.id]||{}));return k<0?0:k}
+function draw(){const t=ITEMS[i],s=S[t.id]||{};
+ if(!s.position)showMask=false;
+ $('ctx').src=(showMask?'mask/':'ctx/')+t.id+'.jpg';$('crop').src='crop/'+t.id+'.jpg';
+ $('pos').textContent=(i+1)+' / '+ITEMS.length;
+ $('done').textContent='완료 '+ITEMS.filter(x=>complete(S[x.id]||{})).length;
+ document.querySelectorAll('.opt[data-f]').forEach(e=>e.classList.toggle('on',String(s[e.dataset.f])===e.dataset.v));
+ document.querySelectorAll('.tog').forEach(e=>e.classList.toggle('on',!!s[e.dataset.t]));
+ $('mflag').textContent=(s.mask_error?'마스크 오류 표시됨':'')+(showMask?'  (마스크: 파랑=도로, 초록=보도)':'');
+ $('note').value=s.note||'';$('meta').textContent=t.id;$('warn').textContent='';}
+function setF(f,v){cur()[f]=v;save();draw();}
+function tog(f){const s=cur();s[f]=!s[f];save();draw();}
+function next(){if(!complete(cur())){$('warn').textContent='위치와 방향을 고르거나, 제외(X)를 켜세요.';return;}
+ if(i<ITEMS.length-1)i++;draw();}
+document.querySelectorAll('.opt[data-f]').forEach(e=>e.onclick=()=>setF(e.dataset.f,e.dataset.v));
+document.querySelectorAll('.tog').forEach(e=>e.onclick=()=>tog(e.dataset.t));
+$('note').addEventListener('keydown',ev=>{if(ev.key==='Enter'){cur().note=$('note').value;save();$('note').blur();}});
+document.addEventListener('keydown',ev=>{if(document.activeElement===$('note'))return;
+ const k=ev.key.toLowerCase(),s=cur();
+ if('1234'.includes(k)&&k.length===1)setF('position',k);
+ else if(DIR[k])setF('direction',k);
+ else if(k==='c')tog('crosswalk');else if(k==='o')tog('occluded');else if(k==='x')tog('excluded');
+ else if(k===' '){ev.preventDefault();next();}
+ else if(ev.key==='ArrowRight'){if(i<ITEMS.length-1)i++;draw();}
+ else if(ev.key==='ArrowLeft'){if(i>0)i--;draw();}
+ else if(k==='v'){if(s.position){showMask=!showMask;draw();}}
+ else if(k==='m'){if(s.position){s.mask_error=!s.mask_error;save();draw();}}
+ else if(k==='g'){const g=$('guide');g.style.display=g.style.display==='block'?'none':'block';}
+ else if(k==='n'){ev.preventDefault();$('note').focus();}});
+const COLS=['position','direction','crosswalk','occluded','excluded','mask_error'];
+$('exp').onclick=()=>{const rows=['id,'+COLS.join(',')+',note'];ITEMS.forEach(t=>{const s=S[t.id]||{};
+ rows.push([t.id,s.position||'',s.direction||'',s.crosswalk?1:0,s.occluded?1:0,s.excluded?1:0,s.mask_error?1:0,
+  JSON.stringify(s.note||'')].join(','));});
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+rows.join('\n')],{type:'text/csv'}));
+ a.download='attributes___NAME__.csv';a.click();};
+$('imp').onchange=async ev=>{const f=ev.target.files[0];if(!f)return;
+ const lines=(await f.text()).replace(/^﻿/,'').split(/\r?\n/).slice(1);
+ lines.forEach(l=>{if(!l.trim())return;const m=l.match(/^([^,]+),([^,]*),([^,]*),([^,]*),([^,]*),([^,]*),([^,]*),(.*)$/);if(!m)return;
+  S[m[1]]={position:m[2]||undefined,direction:m[3]||undefined,crosswalk:m[4]==='1',occluded:m[5]==='1',
+   excluded:m[6]==='1',mask_error:m[7]==='1',note:m[8]?JSON.parse(m[8]):''};});
+ save();i=firstOpen();draw();};
+i=firstOpen();draw();
+</script></body></html>"""
+
+
+def write_attribute_page(output):
+    """Condition-by-condition labeling page over an existing set (docs/RISK_LABEL_CRITERIA_DRAFT.md v1)."""
+    items = pd.read_csv(output / "items.csv")
+    page = ATTR_PAGE.replace("__NAME__", output.name).replace(
+        "__ITEMS__", json.dumps([{"id": i} for i in items["id"]]))
+    (output / "index_attr.html").write_text(page, encoding="utf-8")
+    print("open:", (output / "index_attr.html").resolve())
+
+
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--attributes-page", action="store_true",
+                        help="only write index_attr.html for an existing set in --output")
     parser.add_argument("--view", type=Path, required=True, help="data/views/session_v1 (make_split_view.py)")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--n", type=int, default=400)
@@ -138,6 +232,9 @@ def main():
     parser.add_argument("--risk-share", type=float, default=.6)
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
+    if args.attributes_page:
+        write_attribute_page(args.output)
+        return
     if args.output.exists() and any(args.output.iterdir()):
         raise FileExistsError("Output folder is not empty; labels may already exist there: %s" % args.output)
     chosen = sample(args.view, args.n, args.min_height, args.per_clip, args.risk_share, args.seed)
