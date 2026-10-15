@@ -1,0 +1,74 @@
+{
+  "researcher v0 labels (risk/caution/safe)": {
+    "n": 113,
+    "sessions": 75,
+    "class_counts": {
+      "1": 40,
+      "2": 40,
+      "3": 33
+    },
+    "rule: foot on road = risky": {
+      "macro_f1": "0.374 ± 0.000",
+      "risky_recall": "0.515 ± 0.000",
+      "risky_precision": "0.447 ± 0.000"
+    },
+    "position (path geometry)": {
+      "macro_f1": "0.380 ± 0.019",
+      "risky_recall": "0.573 ± 0.058",
+      "risky_precision": "0.329 ± 0.024"
+    },
+    "road mask only": {
+      "macro_f1": "0.568 ± 0.019",
+      "risky_recall": "0.785 ± 0.052",
+      "risky_precision": "0.434 ± 0.020"
+    },
+    "position + road mask": {
+      "macro_f1": "0.521 ± 0.024",
+      "risky_recall": "0.636 ± 0.066",
+      "risky_precision": "0.395 ± 0.034"
+    }
+  },
+  "AI draft, v1 rule risk (reference only)": {
+    "n": 212,
+    "sessions": 108,
+    "class_counts": {
+      "1": 135,
+      "2": 33,
+      "3": 44
+    },
+    "rule: foot on road = risky": {
+      "macro_f1": "0.351 ± 0.000",
+      "risky_recall": "0.409 ± 0.000",
+      "risky_precision": "0.254 ± 0.000"
+    },
+    "position (path geometry)": {
+      "macro_f1": "0.463 ± 0.019",
+      "risky_recall": "0.670 ± 0.026",
+      "risky_precision": "0.407 ± 0.019"
+    },
+    "road mask only": {
+      "macro_f1": "0.458 ± 0.013",
+      "risky_recall": "0.453 ± 0.039",
+      "risky_precision": "0.318 ± 0.023"
+    },
+    "position + road mask": {
+      "macro_f1": "0.514 ± 0.015",
+      "risky_recall": "0.643 ± 0.027",
+      "risky_precision": "0.458 ± 0.030"
+    }
+  },
+  "band check: AI position vs |lateral| <= 1": {
+    "false": {
+      "1": 21,
+      "2": 23,
+      "3": 73,
+      "4": 73
+    },
+    "true": {
+      "1": 18,
+      "2": 4,
+      "3": 0,
+      "4": 0
+    }
+  }
+}
