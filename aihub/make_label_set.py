@@ -143,7 +143,7 @@ small{color:#aaa}button{padding:6px 10px}#warn{color:#ff8a65;min-height:1.2em}
 </style></head><body>
 <header><b id="pos"></b><span id="done"></span>
 <button id="exp">CSV 저장</button><label>CSV 불러오기 <input type="file" id="imp" accept=".csv"></label>
-<small>위치 1-4 · 방향 Q W E R · C 횡단보도 · O 가림 · X 제외 · Space 다음 · ←/→ 이동 · V 마스크(위치 선택 후) · M 마스크 오류 · G 경로 띠 · N 메모</small></header>
+<small>위치 1-4 · 방향 Q W E R · C 횡단보도 · O 가림 · B 보도·차도 경계 · X 제외 · Space 다음 · ←/→ 이동 · V 마스크(위치 선택 후) · M 마스크 오류 · G 경로 띠 · N 메모</small></header>
 <main><div id="ctxwrap"><img id="ctx"><svg id="guide" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="32,100 68,100 50.6,38 49.4,38" fill="rgba(255,212,0,.13)" stroke="rgba(255,212,0,.85)" stroke-width=".25" stroke-dasharray="1 .8"/></svg></div>
 <div id="side"><img id="crop">
 <h4>① 주행 경로와의 위치</h4>
@@ -152,8 +152,8 @@ small{color:#aaa}button{padding:6px 10px}#warn{color:#ff8a65;min-height:1.2em}
 <h4>② 움직이는 방향</h4>
 <span class="opt" data-f="direction" data-v="q">Q 경로로 들어옴</span><span class="opt" data-f="direction" data-v="w">W 나란히</span>
 <span class="opt" data-f="direction" data-v="e">E 멀어짐</span><span class="opt" data-f="direction" data-v="r">R 서 있음/모름</span>
-<h4>③ ④ 해당하면 켜기</h4>
-<span class="opt tog" data-t="crosswalk">C 횡단보도 위</span><span class="opt tog" data-t="occluded">O 가림, 차 사이</span>
+<h4>③ ④ ⑤ 해당하면 켜기</h4>
+<span class="opt tog" data-t="crosswalk">C 횡단보도 위</span><span class="opt tog" data-t="occluded">O 가림, 차 사이</span><span class="opt tog" data-t="boundary">B 보도·차도 경계에 걸침</span>
 <span class="opt tog" data-t="excluded">X 제외(판단 불가)</span>
 <p id="warn"></p><p id="mflag"></p><input id="note" placeholder="메모 (N으로 입력, Enter로 저장)"><p><small id="meta"></small></p>
 <p><small>노란 박스가 대상입니다. 주행 경로 = 이미지 하단 중앙에서 앞으로 뻗는 차 한 대 폭. G로 대략적인 경로 띠를 켤 수 있습니다(곡선 도로에서는 눈으로 보정).
@@ -187,7 +187,7 @@ document.addEventListener('keydown',ev=>{if(document.activeElement===$('note'))r
  const k=ev.key.toLowerCase(),s=cur();
  if('1234'.includes(k)&&k.length===1)setF('position',k);
  else if(DIR[k])setF('direction',k);
- else if(k==='c')tog('crosswalk');else if(k==='o')tog('occluded');else if(k==='x')tog('excluded');
+ else if(k==='c')tog('crosswalk');else if(k==='o')tog('occluded');else if(k==='b')tog('boundary');else if(k==='x')tog('excluded');
  else if(k===' '){ev.preventDefault();next();}
  else if(ev.key==='ArrowRight'){if(i<ITEMS.length-1)i++;draw();}
  else if(ev.key==='ArrowLeft'){if(i>0)i--;draw();}
@@ -195,17 +195,18 @@ document.addEventListener('keydown',ev=>{if(document.activeElement===$('note'))r
  else if(k==='m'){if(s.position){s.mask_error=!s.mask_error;save();draw();}}
  else if(k==='g'){const g=$('guide');g.style.display=g.style.display==='block'?'none':'block';}
  else if(k==='n'){ev.preventDefault();$('note').focus();}});
-const COLS=['position','direction','crosswalk','occluded','excluded','mask_error'];
+const COLS=['position','direction','crosswalk','occluded','boundary','excluded','mask_error'],FLAGS=COLS.slice(2);
 $('exp').onclick=()=>{const rows=['id,'+COLS.join(',')+',note'];ITEMS.forEach(t=>{const s=S[t.id]||{};
- rows.push([t.id,s.position||'',s.direction||'',s.crosswalk?1:0,s.occluded?1:0,s.excluded?1:0,s.mask_error?1:0,
-  JSON.stringify(s.note||'')].join(','));});
+ rows.push([t.id,s.position||'',s.direction||'',...FLAGS.map(f=>s[f]?1:0),JSON.stringify(s.note||'')].join(','));});
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+rows.join('\n')],{type:'text/csv'}));
  a.download='attributes___NAME__.csv';a.click();};
 $('imp').onchange=async ev=>{const f=ev.target.files[0];if(!f)return;
- const lines=(await f.text()).replace(/^﻿/,'').split(/\r?\n/).slice(1);
- lines.forEach(l=>{if(!l.trim())return;const m=l.match(/^([^,]+),([^,]*),([^,]*),([^,]*),([^,]*),([^,]*),([^,]*),(.*)$/);if(!m)return;
-  S[m[1]]={position:m[2]||undefined,direction:m[3]||undefined,crosswalk:m[4]==='1',occluded:m[5]==='1',
-   excluded:m[6]==='1',mask_error:m[7]==='1',note:m[8]?JSON.parse(m[8]):''};});
+ const lines=(await f.text()).replace(/^\ufeff/,'').split(/\r?\n/);const hdr=lines[0].split(',');
+ lines.slice(1).forEach(l=>{if(!l.trim())return;const parts=l.split(',');const n=hdr.length-1;
+  const v=parts.slice(0,n).concat([parts.slice(n).join(',')]);const s={};
+  hdr.forEach((h,j)=>{const x=v[j];if(h==='id')return;
+   if(h==='note')s.note=x?JSON.parse(x):'';else if(h==='position'||h==='direction')s[h]=x||undefined;else s[h]=x==='1';});
+  S[v[0]]=s;});
  save();i=firstOpen();draw();};
 i=firstOpen();draw();
 </script></body></html>"""
