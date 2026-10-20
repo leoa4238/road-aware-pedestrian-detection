@@ -1,0 +1,139 @@
+{
+  "baseline": {
+    "weights": "D:/nonmoon/best.pt",
+    "mode": "none",
+    "zero_mask": false,
+    "gamma": null,
+    "mAP50": 0.7241,
+    "pedestrian_AP50": 0.7782,
+    "per_class_AP50": {
+      "pedestrian": 0.7782,
+      "car": 0.8747,
+      "truck_bus": 0.7459,
+      "two_wheeler": 0.5877,
+      "personal_mobility": 0.6339
+    },
+    "fixed_threshold": {
+      "tp": 1089,
+      "fn": 403,
+      "fp": 320,
+      "recall": 0.7298927613941019,
+      "recall_by_height": {
+        "[0,32)": {
+          "gt": 11,
+          "recall": 0.0
+        },
+        "[128,256)": {
+          "gt": 384,
+          "recall": 0.901
+        },
+        "[256,inf)": {
+          "gt": 278,
+          "recall": 0.9137
+        },
+        "[32,64)": {
+          "gt": 271,
+          "recall": 0.3321
+        },
+        "[64,128)": {
+          "gt": 548,
+          "recall": 0.7281
+        }
+      }
+    }
+  },
+  "rga": {
+    "weights": "D:/nonmoon/rga_best.pt",
+    "mode": "rga",
+    "zero_mask": false,
+    "gamma": [
+      0.2271,
+      -0.2593,
+      -0.2478
+    ],
+    "mAP50": 0.7234,
+    "pedestrian_AP50": 0.7731,
+    "per_class_AP50": {
+      "pedestrian": 0.7731,
+      "car": 0.8697,
+      "truck_bus": 0.7353,
+      "two_wheeler": 0.5907,
+      "personal_mobility": 0.648
+    },
+    "fixed_threshold": {
+      "tp": 1107,
+      "fn": 385,
+      "fp": 341,
+      "recall": 0.7419571045576407,
+      "recall_by_height": {
+        "[0,32)": {
+          "gt": 11,
+          "recall": 0.0
+        },
+        "[128,256)": {
+          "gt": 384,
+          "recall": 0.901
+        },
+        "[256,inf)": {
+          "gt": 278,
+          "recall": 0.9281
+        },
+        "[32,64)": {
+          "gt": 271,
+          "recall": 0.3321
+        },
+        "[64,128)": {
+          "gt": 548,
+          "recall": 0.7536
+        }
+      }
+    }
+  },
+  "rga_zero_mask": {
+    "weights": "D:/nonmoon/rga_best.pt",
+    "mode": "rga",
+    "zero_mask": true,
+    "gamma": [
+      0.2271,
+      -0.2593,
+      -0.2478
+    ],
+    "mAP50": 0.7221,
+    "pedestrian_AP50": 0.7723,
+    "per_class_AP50": {
+      "pedestrian": 0.7723,
+      "car": 0.869,
+      "truck_bus": 0.7338,
+      "two_wheeler": 0.5897,
+      "personal_mobility": 0.6459
+    },
+    "fixed_threshold": {
+      "tp": 1102,
+      "fn": 390,
+      "fp": 341,
+      "recall": 0.7386058981233244,
+      "recall_by_height": {
+        "[0,32)": {
+          "gt": 11,
+          "recall": 0.0
+        },
+        "[128,256)": {
+          "gt": 384,
+          "recall": 0.901
+        },
+        "[256,inf)": {
+          "gt": 278,
+          "recall": 0.9281
+        },
+        "[32,64)": {
+          "gt": 271,
+          "recall": 0.321
+        },
+        "[64,128)": {
+          "gt": 548,
+          "recall": 0.75
+        }
+      }
+    }
+  }
+}

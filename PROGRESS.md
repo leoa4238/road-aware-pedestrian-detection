@@ -1,6 +1,7 @@
 # 진행 상황
 
-> **최신 (2026-10-14):** 먼저 `docs/PROGRESS_FAILURE_MODES_20261014.md`(실패 유형 분석, split `session_v1`), 그다음 `docs/RGA_IMPLEMENTATION.md`(채택된 RGA 구현과 실험 계획)를 읽는다.
+> **최신 (2026-10-20):** 먼저 `docs/PROGRESS_20261020.md`(현재 방향, 라벨 현황, 파일럿 결과, 다음 할 일)를 읽는다.
+> 세부: `docs/PROGRESS_FAILURE_MODES_20261014.md`(split, 실패 분석), `docs/RGA_IMPLEMENTATION.md`(RGA), `docs/RISK_LABEL_CRITERIA_DRAFT.md`(라벨 기준).
 > 그 앞 단계의 오류 분석은 `docs/PROGRESS_ERROR_ANALYSIS_20261014.md`. 아래는 2026-10-10 기록이다.
 
 ## 2026-10-10 (PC방, RTX 4060 Ti 8GB)
