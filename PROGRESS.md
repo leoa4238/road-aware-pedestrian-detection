@@ -1,5 +1,17 @@
 # 진행 상황
 
+## 2026-10-25
+
+- 교수님 주제 승인 (생활도로 환경 보행자).
+- 실험 환경을 Colab으로 전환. `notebooks/colab_baseline_analysis.ipynb` 추가, `train_baseline.py`에 `--project`, `--results-dir` 추가
+  (결과를 Drive에 저장, 끝난 학습에 `--resume`을 다시 걸면 test 평가만 수행).
+- 다음 할 일 3~5번용 스크립트 추가 (실데이터 실행은 Colab에서 할 것):
+  - `eval_zeroshot.py`: COCO 사전학습 YOLO(학습 없음) vs 베이스라인 (다음 할 일 5)
+  - `analyze_misses.py`: 놓친 보행자 분석 (다음 할 일 3, 4)
+  - `compare_risk_definitions.py`: 위험 보행자 정의 후보 on_road / ego_path / ego_path_near / path_or_edge 비교 (다음 할 일 2).
+    주행 경로 사다리꼴(소실선 0.45, 하단 반폭 0.30)은 가정값이므로 예시 이미지로 확인 후 조정.
+  - AP 계산은 합성 데이터에서 pycocotools COCOeval AP50과 소수점 일치 확인.
+
 ## 2026-10-10 (PC방, RTX 4060 Ti 8GB)
 
 ### 한 일

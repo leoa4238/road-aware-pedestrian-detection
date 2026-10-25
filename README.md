@@ -25,8 +25,13 @@ AI-Hub `058. 생활도로 객체인식 자율주행 데이터` 전방 카메라(
 ```text
 aihub/prepare_dataset.py   AI-Hub COCO 라벨 -> YOLO 형식, clip 단위 split, 보행자 발 위치 기록
 aihub/make_road_masks.py   SegFormer 도로/보도 마스크, 보행자별 도로 위 여부와 도로까지 거리
-aihub/train_baseline.py    YOLO 베이스라인 학습, test split 클래스별 mAP 저장
+aihub/train_baseline.py    YOLO 베이스라인 학습, test split 클래스별 mAP 저장 (--project로 저장 위치 지정)
+aihub/eval_zeroshot.py     COCO 사전학습 모델 vs 생활도로 학습 모델, 같은 코드로 클래스별 AP50 비교
+aihub/analyze_misses.py    놓친 보행자를 크기·발 위치·시간대·날씨·도로 유형·시나리오별로 분석
+aihub/compare_risk_definitions.py  위험 보행자 정의 후보 비교 (비율, 시나리오별 구분력, 예시 이미지)
+aihub/eval_common.py       평가 공용 함수 (IoU 매칭, AP50; pycocotools와 수치 일치 확인)
 aihub/setup_pcbang.ps1     초기화되는 PC에서 Python/CUDA 환경 재설치
+notebooks/colab_baseline_analysis.ipynb  Colab: Drive 백업으로 학습·분석, 결과는 Drive에 저장
 ```
 
 실행 순서:

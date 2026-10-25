@@ -21,7 +21,10 @@
 
 ## 실행 환경
 
-두 가지 환경을 모두 지원해야 한다.
+세 가지 환경을 모두 지원해야 한다. 2026-10-25부터 주 실험 환경은 Colab.
+
+0. Colab: `notebooks/colab_baseline_analysis.ipynb`. 데이터는 Drive 백업 zip을 매 세션 `/content`에 풀어 쓰고,
+   학습 결과·분석 결과는 `--project`/`--out`으로 Drive에 저장한다(세션 종료 시 /content는 지워진다).
 
 1. PC방 (Windows, 재부팅 시 C: 초기화, GPU RTX 4060 Ti 8GB): `aihub/setup_pcbang.ps1`로 매번 재설치.
    Python 미설치, winget/git 없음. 작업 위치 `C:\work`. 끝낼 때 GitHub 자격 증명 삭제를 꼭 안내.
