@@ -1,6 +1,9 @@
 # 진행 상황
 
-> **최신 (2026-10-20):** 먼저 `docs/PROGRESS_20261020.md`(현재 방향, 라벨 현황, 파일럿 결과, 다음 할 일)를 읽는다.
+> **최신 (2026-11-16):** 방향을 RCR-Head(위험 보행자 판별)로 정함(사용자: 교수님 승인 예상, 주제 범위 안). 설계와 코드는 `docs/RCR_HEAD_DESIGN.md`.
+> 남은 일: 라벨 400명 완성 후 `rcr_features.py` → `rcr_train.py` 실행.
+>
+> **2026-10-20:** 먼저 `docs/PROGRESS_20261020.md`(현재 방향, 라벨 현황, 파일럿 결과, 다음 할 일)를 읽는다.
 > 세부: `docs/PROGRESS_FAILURE_MODES_20261014.md`(split, 실패 분석), `docs/RGA_IMPLEMENTATION.md`(RGA), `docs/RISK_LABEL_CRITERIA_DRAFT.md`(라벨 기준).
 > 그 앞 단계의 오류 분석은 `docs/PROGRESS_ERROR_ANALYSIS_20261014.md`. 아래는 2026-10-10 기록이다.
 
