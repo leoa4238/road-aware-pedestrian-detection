@@ -1,6 +1,7 @@
 # 진행 상황
 
 > **최신 (2026-11-16):** 방향을 RCR-Head(위험 보행자 판별)로 정함(사용자: 교수님 승인 예상, 주제 범위 안). 설계와 코드는 `docs/RCR_HEAD_DESIGN.md`.
+> 라벨링 페이지에 위치 자동 제안·AI 초안 검수 기능 추가, 이 PC의 `data/labeling/pilot_v0/index_attr.html`에 생성(11-16).
 > 남은 일: 라벨 400명 완성 후 `rcr_features.py` → `rcr_train.py` 실행.
 >
 > **2026-10-20:** 먼저 `docs/PROGRESS_20261020.md`(현재 방향, 라벨 현황, 파일럿 결과, 다음 할 일)를 읽는다.

@@ -56,6 +56,8 @@ def load_labels(path):
             df[k] = np.nan
         return df[["id", "risk", "position", "direction", *BINARY_CONDITIONS]]
     df = pd.read_csv(path, dtype={"position": "string", "direction": "string"})
+    if "checked" in df:                                      # labeling page export: reviewed rows only
+        df = df[df["checked"] == 1]
     df = df[(df.get("excluded", 0) == 0) & df["position"].notna() & df["direction"].notna()].copy()
     df["direction"] = df["direction"].str.lower()
     df["risk"] = [v1_risk(p, d, o) for p, d, o in zip(df["position"], df["direction"], df["occluded"])]

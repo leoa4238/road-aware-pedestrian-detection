@@ -61,6 +61,19 @@ v0 라벨 122명(`data/labeling/pilot_v0/labels_partial_20261015.tsv`)은 버리
 - 자동 저장은 브라우저에만 된다. 중간중간 `CSV 저장`으로 `attributes_pilot_v0.csv`를 받아 `data/labeling/pilot_v0/`에 둔다. 이어서 할 때 페이지가 비어 있으면 `CSV 불러오기`.
 - 일관성 확인: 다 마치고 며칠 뒤 50명을 다시 기록해 조건별 자기 일치도(Cohen's kappa)를 계산하고 논문에 밝힌다.
 
+### 위치 자동 제안 (2026-11-16 추가)
+
+- 페이지를 열면 위치(1~4)가 **미리 채워져** 있다. 발 위치·박스 크기·도로 마스크 값(숫자)으로만 계산했고, 이미지는 쓰지 않았다
+  (`make_label_set.suggest_position`). 맞으면 방향만 고르고 `Space`, 틀리면 숫자 키로 바꾼다. `A`로 제안을 끌 수 있다.
+- 제안이 분명한 사람부터 애매한 사람 순서로 나온다.
+- `AI 초안 불러오기(검수용)`: 초안 224명을 **검수 전 상태**로 불러온다. `Space`를 눌러야 확인된 라벨이 된다.
+- `Space`로 확인한 사람만 CSV에 라벨이 들어간다(`checked=1`). 확인 안 된 제안·초안은 빈 칸으로 저장된다.
+- 주의(앵커링): 제안을 보고 판단하면 라벨이 제안 쪽으로 기울 수 있다. 제안은 도로 마스크에서 나오므로,
+  이 편향은 도로 기반 모델의 성능을 부풀릴 수 있다. CSV의 `sug_accepted`(제안을 그대로 받았는지)로 비율을 보고하고,
+  나중에 다시 하는 50명 자기 일치도 검사는 **`A`로 제안을 끄고** 한다.
+- 페이지 다시 만들기: `items.csv`가 없으면 `aihub/rebuild_label_items.py`로 페이지의 id와 백업의 `objects_road.csv`에서 복원한 뒤
+  `python aihub/make_label_set.py --attributes-page --view <aihub_f> --output <set>`.
+
 ## 파일럿 표본
 
 - 보행자 높이 64px 이상(원본 기준), session_v1의 train+val에서 400명. test는 최종 실험용으로 남긴다.
