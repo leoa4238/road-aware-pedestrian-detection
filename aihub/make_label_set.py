@@ -143,7 +143,7 @@ small{color:#aaa}button{padding:6px 10px}#warn{color:#ff8a65;min-height:1.2em}
 </style></head><body>
 <header><b id="pos"></b><span id="done"></span>
 <button id="exp">CSV 저장</button><label>CSV 불러오기 <input type="file" id="imp" accept=".csv"></label>
-<label>AI 초안 불러오기(검수용) <input type="file" id="impd" accept=".csv"></label>
+<button id="copy">CSV 복사</button><label>AI 초안 불러오기(검수용) <input type="file" id="impd" accept=".csv"></label>
 <small>A 위치 제안 켜기/끄기 ·
 위치 1-4 · 방향 Q W E R · C 횡단보도 · O 가림 · B 보도·차도 경계 · X 제외 · Space 다음 · ←/→ 이동 · V 마스크(위치 선택 후) · M 마스크 오류 · G 경로 띠 · N 메모</small></header>
 <main><div id="ctxwrap"><img id="ctx"><svg id="guide" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="32,100 68,100 50.6,38 49.4,38" fill="rgba(255,212,0,.13)" stroke="rgba(255,212,0,.85)" stroke-width=".25" stroke-dasharray="1 .8"/></svg></div>
@@ -238,6 +238,13 @@ function importDraft(text){let n=0;parseCsv(text).forEach(([id,d])=>{const s=S[i
   S[id]=Object.assign(d,{draft:true,checked:false,auto:false});n++;});
  save();i=firstOpen();draw();return n;}
 $('imp').onchange=async ev=>{const f=ev.target.files[0];if(f)importLabels(await f.text());};
+// When downloads are blocked: copy the same CSV to the clipboard (falls back to a selectable text box).
+$('copy').onclick=async()=>{const text=csvRows().join(String.fromCharCode(10));const n=ITEMS.filter(x=>complete(S[x.id]||{})).length;
+ try{await navigator.clipboard.writeText(text);alert('확인된 '+n+'명 라벨을 클립보드에 복사했습니다.');}
+ catch(e){const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:5%;top:5%;width:90%;height:80%;z-index:9';
+  document.body.appendChild(ta);ta.focus();ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}
+  alert(ok?'확인된 '+n+'명 라벨을 클립보드에 복사했습니다.':'자동 복사가 막혀 있습니다. 열린 글상자에서 Ctrl+C로 복사하세요 (Esc로 닫기).');
+  ta.addEventListener('keydown',ev=>{if(ev.key==='Escape')ta.remove();});if(ok)ta.remove();}};
 $('impd').onchange=async ev=>{const f=ev.target.files[0];if(f)alert('AI 초안 '+importDraft(await f.text())+'명을 검수 대상으로 불러왔습니다.');};
 i=firstOpen();draw();
 </script></body></html>"""

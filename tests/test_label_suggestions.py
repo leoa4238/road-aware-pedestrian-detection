@@ -94,6 +94,8 @@ class PageTests(unittest.TestCase):
         self.assertTrue(r["legacyChecked"])
         self.assertEqual(r["toggleOff"]["after"], None)
         self.assertEqual(r["toggleOff"]["stored"], "off")
+        self.assertTrue(r["copied"])
+        self.assertEqual(r["copiedChecked"], 1)
 
     def test_rcr_train_uses_checked_rows_only(self):
         with tempfile.TemporaryDirectory() as tmp:

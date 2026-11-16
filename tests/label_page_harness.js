@@ -23,6 +23,8 @@ global.document = {
 global.URL = { createObjectURL: blob => { downloaded = blob.text; return 'blob:'; } };
 global.Blob = function (parts) { this.text = parts.join(''); };
 global.alert = () => {};
+let clip = null;
+global.navigator = { clipboard: { writeText: async t => { clip = t; } } };
 
 function load(prestore) {
   Object.keys(store).forEach(k => delete store[k]);
@@ -65,4 +67,13 @@ p = load();
 const before = p.cur().position;
 key('a');
 out.toggleOff = { before, after: p.cur().position || null, stored: store[KEY + '_sug'] };
-console.log(JSON.stringify(out));
+// 7. copy button puts the same CSV on the clipboard
+(async () => {
+  p = load();
+  key('w'); key(' ');
+  await els.copy.onclick();
+  const NL = String.fromCharCode(10);
+  out.copied = clip === p.csvRows().join(NL);
+  out.copiedChecked = clip.split(NL).slice(1).filter(l => l.split(',')[8] === '1').length;
+  console.log(JSON.stringify(out));
+})();
